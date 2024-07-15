@@ -6,6 +6,8 @@ local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
 local GetTime = GetTime
 local UnitGUID = UnitGUID
 
+local ambush = 8727;
+
 --[[
     RiposteHandler guesses when Riposte is available,
     even while the ability is on cooldown
@@ -128,6 +130,24 @@ local RiposteHandler = {
     end,
 }
 
+local function useCutthroat()
+    local buff = SAO.IsSoD() and 462707; -- Cutthroat (buff)
+    local rune = SAO.IsSoD() and 424980; -- Cutthroat (rune)
+    SAO:CreateEffect(
+        "cutthroat",
+        SAO.SOD,
+        buff,
+        "aura",
+        {
+            rune = rune,
+            overlay = { texture = "slice_and_dice", position = "Top" },
+            buttons = {
+                [SAO.SOD] = ambush,
+            },
+        }
+    );
+end
+
 local function customLogin(self, ...)
     -- Initialization on PLAYER_LOGIN event because the talent tree may not be available before
 
@@ -183,6 +203,10 @@ local function registerClass(self)
             button = backstab,
         }
     );
+
+    -- Cutthroat
+    useCutthroat();
+
 end
 
 SAO.Class["ROGUE"] = {
